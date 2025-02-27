@@ -1,32 +1,31 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
 
 
-interface DataObject {
-  id: string;
-  dateregister: string;
-  datemodify: string;
-  customerGuid: string;
-  accountGuid: string;
-  documentContractId: string;
-  directoryId: string;
-  documentVoucherId: string | null;
-  interviewId: string;
-  deviceFingerprint: string;
-  hashReferenceNumber: string;
-  linkerreference: {
-    id: number;
-    guid: string;
-    rowcreator: string;
-    dateregister: string;
-    used: boolean;
-    channel: string;
-    agencyId: string;
-    personalCode: string;
-    email: string;
-    typeReference: string;
-  };
-}
+// interface DataObject {
+//   id: string;
+//   dateregister: string;
+//   datemodify: string;
+//   customerGuid: string;
+//   accountGuid: string;
+//   documentContractId: string;
+//   directoryId: string;
+//   documentVoucherId: string | null;
+//   interviewId: string;
+//   deviceFingerprint: string;
+//   hashReferenceNumber: string;
+//   linkerreference: {
+//     id: number;
+//     guid: string;
+//     rowcreator: string;
+//     dateregister: string;
+//     used: boolean;
+//     channel: string;
+//     agencyId: string;
+//     personalCode: string;
+//     email: string;
+//     typeReference: string;
+//   };
+// }
 
 function App() {
 
@@ -40,7 +39,6 @@ function App() {
   const [startDate, setStartDate] = useState(new Date(new Date().setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'))
   const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', '-04:00'))
 
-  const [count, setCount] = useState(0)
 
   useEffect(() => {
     fetchData();
@@ -105,53 +103,53 @@ function App() {
 
   function agruparPorIntervalo30Minutos(data: any): Record<string, number> {
     const conteoPorIntervalo: Record<string, number> = {};
-  
+
     data.forEach((item: any) => {
       const date = new Date(item.dateregister);
       date.setSeconds(0, 0); // Resetea segundos y milisegundos
-  
+
       // Redondear la hora al intervalo de 30 minutos
       const minutos = date.getMinutes();
       const minutosRedondeados = minutos < 30 ? 0 : 30;
       date.setMinutes(minutosRedondeados);
-  
+
       const clave = date.toISOString().replace("T", " ").substring(0, 19); // Formato legible
-      
+
       conteoPorIntervalo[clave] = (conteoPorIntervalo[clave] || 0) + 1;
     });
-  
+
     return conteoPorIntervalo;
   }
-  
-
-  const getAccountsPerTime = () => {
-
-    const intervals = 30 * 60 * 1000; // 30 minutes in milliseconds
-    const accountsPerInterval = new Map();
-
-    const intervalsArray = Array.from({ length: Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / intervals) }, (_, i) => i * intervals);
-
-    const final = []
-
-    for (let i = 0; i < steppersData.length; i++) {
-      const stepperTime = new Date(steppersData[i].dateregister).getTime();
 
 
-      for (let e = 0; e < intervalsArray.length - 1; e++) {
+  // const getAccountsPerTime = () => {
 
-        console.log("rim", intervalsArray[e], stepperTime)
-        if (stepperTime >= intervalsArray[e] && stepperTime <= intervalsArray[e + 1]) {
-          if (!accountsPerInterval.has(intervalsArray[e])) {
-            accountsPerInterval.set(intervalsArray[e], 0);
-          }
-          accountsPerInterval.set(intervalsArray[e], accountsPerInterval.get(intervalsArray[e]) + 1);
-        }
-      }
-    }
+  //   const intervals = 30 * 60 * 1000; // 30 minutes in milliseconds
+  //   const accountsPerInterval = new Map();
 
-    console.log("accountsPerInterval", accountsPerInterval)
+  //   const intervalsArray = Array.from({ length: Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / intervals) }, (_, i) => i * intervals);
 
-  }
+  //   const final = []
+
+  //   for (let i = 0; i < steppersData.length; i++) {
+  //     const stepperTime = new Date(steppersData[i].dateregister).getTime();
+
+
+  //     for (let e = 0; e < intervalsArray.length - 1; e++) {
+
+  //       console.log("rim", intervalsArray[e], stepperTime)
+  //       if (stepperTime >= intervalsArray[e] && stepperTime <= intervalsArray[e + 1]) {
+  //         if (!accountsPerInterval.has(intervalsArray[e])) {
+  //           accountsPerInterval.set(intervalsArray[e], 0);
+  //         }
+  //         accountsPerInterval.set(intervalsArray[e], accountsPerInterval.get(intervalsArray[e]) + 1);
+  //       }
+  //     }
+  //   }
+
+  //   console.log("accountsPerInterval", accountsPerInterval)
+
+  // }
 
 
   // for (let i = 0; i < steppersData.length; i++) {
@@ -193,8 +191,38 @@ function App() {
             <div className="text-4xl font-semibold ">
               {getAccountsOpened()}
             </div>
+            <div className='p-2'>
 
-            <h2 className="text-2xl font-bold mb-4">Cantidad por intervalo de tiempo</h2>
+              <button
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                onClick={() => {
+                  const today = new Date();
+                  setStartDate(new Date(today.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                  setEndDate(new Date(today.setDate(today.getDate() + 1)).toISOString().replace('Z', '-04:00'));
+                }}
+              >
+                Set Today
+              </button>
+              <button
+                className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+                onClick={() => {
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  setStartDate(new Date(yesterday.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                  setEndDate(new Date(yesterday.setDate(yesterday.getDate() + 1)).toISOString().replace('Z', '-04:00'));
+                }}
+              >
+                Set Yesterday
+              </button>
+              <button
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                onClick={fetchData}
+              >
+                Reload Data
+              </button>
+            </div>
+
+            {/* <h2 className="text-2xl font-bold mb-4">Cantidad por intervalo de tiempo</h2> */}
             {/* <div className="text-sm">
               {getAccountsPerTime().map((interval, index) => (
                 <p key={index}>{interval.interval}: {interval.count}</p>
