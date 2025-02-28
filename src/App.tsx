@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { Button } from './components/ui/button';
+import ChartOpeningByHours from './components/chart/openingsByHour';
 
 // interface DataObject {
 //   id: string;
@@ -42,6 +45,8 @@ function App() {
 
   useEffect(() => {
     fetchData();
+    // setSteppersData(testData)
+    // setIsLoaded(false)
 
   }, []);
 
@@ -88,8 +93,6 @@ function App() {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoaded(false)
-      const test = agruparPorIntervalo30Minutos(steppersData)
-      console.log(test)
     }
 
 
@@ -101,25 +104,7 @@ function App() {
     return isLoaded ? 0 : steppersData.filter((stepper) => stepper.accountGuid != null || stepper.accountGuid != undefined || stepper.accountGuid != '').length;
   }
 
-  function agruparPorIntervalo30Minutos(data: any): Record<string, number> {
-    const conteoPorIntervalo: Record<string, number> = {};
 
-    data.forEach((item: any) => {
-      const date = new Date(item.dateregister);
-      date.setSeconds(0, 0); // Resetea segundos y milisegundos
-
-      // Redondear la hora al intervalo de 30 minutos
-      const minutos = date.getMinutes();
-      const minutosRedondeados = minutos < 30 ? 0 : 30;
-      date.setMinutes(minutosRedondeados);
-
-      const clave = date.toISOString().replace("T", " ").substring(0, 19); // Formato legible
-
-      conteoPorIntervalo[clave] = (conteoPorIntervalo[clave] || 0) + 1;
-    });
-
-    return conteoPorIntervalo;
-  }
 
 
   // const getAccountsPerTime = () => {
@@ -174,66 +159,94 @@ function App() {
 
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900">
-      <div className="border border-gray-300 rounded-lg p-5 shadow-lg bg-white">
+    <div className="flex justify-center items-center h-screen w-screen bg-neutral-900">
 
 
-        {isLoaded ? (
-          <svg className="animate-spin h-8 w-8 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>) : (
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Amount</h2>
 
-            <p className='text-sm'>Actualizado hasta: {new Date(new Date(endDate).getTime() - 4 * 60 * 60 * 1000).toLocaleString()}</p>
-            <p className="text-sm">Desde: {new Date(startDate).toLocaleString()}</p>
-            <div className="text-4xl font-semibold ">
-              {getAccountsOpened()}
-            </div>
-            <div className='p-2'>
+      {isLoaded ? (
+        <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>) : (
 
-              <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                onClick={() => {
-                  const today = new Date();
-                  setStartDate(new Date(today.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
-                  setEndDate(new Date(today.setDate(today.getDate() + 1)).toISOString().replace('Z', '-04:00'));
-                }}
-              >
-                Set Today
-              </button>
-              <button
-                className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
-                onClick={() => {
-                  const yesterday = new Date();
-                  yesterday.setDate(yesterday.getDate() - 1);
-                  setStartDate(new Date(yesterday.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
-                  setEndDate(new Date(yesterday.setDate(yesterday.getDate() + 1)).toISOString().replace('Z', '-04:00'));
-                }}
-              >
-                Set Yesterday
-              </button>
-              <button
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-                onClick={fetchData}
-              >
-                Reload Data
-              </button>
-            </div>
+        <div className='grid grid-rows-3 mx-4 gap-4'>
 
-            {/* <h2 className="text-2xl font-bold mb-4">Cantidad por intervalo de tiempo</h2> */}
-            {/* <div className="text-sm">
-              {getAccountsPerTime().map((interval, index) => (
-                <p key={index}>{interval.interval}: {interval.count}</p>
-              ))}
-
-            </div>
-            <div></div> */}
+          <div className='flex items-end gap-2'>
+            <Button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              onClick={() => {
+                const today = new Date();
+                setStartDate(new Date(today.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                setEndDate(new Date(today.setDate(today.getDate() + 1)).toISOString().replace('Z', '-04:00'));
+                fetchData();
+              }}
+            >
+              HOY
+            </Button>
+            <Button
+              className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+              onClick={() => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                setStartDate(new Date(yesterday.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                setEndDate(new Date(yesterday.setDate(yesterday.getDate() + 1)).toISOString().replace('Z', '-04:00'));
+                fetchData();
+              }}
+            >
+              AYER
+            </Button>
+            <Button
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+              onClick={fetchData}
+            >
+              ACTUALIZAR
+            </Button>
           </div>
-        )
-        }
-      </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+
+
+            <Card className=''>
+              <CardHeader>
+                <CardTitle>
+                  Cantidad de cuentas aperturadas
+                </CardTitle>
+                <CardDescription>
+                  <p className='text-sm'>Actualizado hasta: {new Date(new Date(endDate).getTime() - 4 * 60 * 60 * 1000).toLocaleString()}</p>
+                  <p className="text-sm">Desde: {new Date(startDate).toLocaleString()}</p>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+
+                <div className="text-8xl font-semibold ">
+                  {getAccountsOpened()}
+                </div>
+
+              </CardContent>
+            </Card>
+
+            <div className=''>
+              <ChartOpeningByHours dataEntry={steppersData} />
+            </div>
+
+          </div>
+
+          <div>
+
+          </div>
+        </div>
+
+
+      )
+
+
+      }
+
+
+
+
+
+
     </div>
   )
 
