@@ -297,8 +297,8 @@ function App() {
                   Cantidad de cuentas aperturadas bajo contingencia SEGIP
                 </CardTitle>
                 <CardDescription>
-                  <p className='text-sm'>Actualizado hasta: {new Date(new Date(endDate).getTime() - 4 * 60 * 60 * 1000).toLocaleString()}</p>
-                  <p className="text-sm">Desde: {new Date(startDate).toLocaleString()}</p>
+                  
+                  <p className="text-sm">Desde: 21/02/2025</p>
                 </CardDescription>
               </CardHeader>
               <CardContent>
