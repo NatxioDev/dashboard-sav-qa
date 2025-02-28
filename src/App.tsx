@@ -45,8 +45,8 @@ function App() {
   const [startDate, setStartDate] = useState(new Date(new Date().setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', ''))
   const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
-  const [startDateSegip, setStartDateSegip] = useState(new Date('2025-02-21T00:00:00-04:00').toISOString().replace('Z', '-04:00'))
-  const [endDateSegip, setEndDateSegip] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
+  const startDateSegip = (new Date('2025-02-21T00:00:00-04:00').toISOString().replace('Z', '-04:00'))
+  const endDateSegip = (new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
   useEffect(() => {
     fetchData();
