@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
-
+import { testData } from './components/chart/test.ts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from './components/ui/button';
 import ChartOpeningByHours from './components/chart/openingsByHour';
+import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover.tsx';
+import { Calendar } from "@/components/ui/calendar"
+import { cn } from "@/lib/utils"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import React from 'react';
 
 // interface DataObject {
 //   id: string;
@@ -35,6 +41,8 @@ function App() {
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
   const SECRET_ID = import.meta.env.VITE_SECRET_ID
 
+  const [date, setDate] = React.useState<Date>()
+
   const [isLoaded, setIsLoaded] = useState(true);
   // const [isLoadedSegip, setIsLoadedSegip] = useState(false);
 
@@ -49,10 +57,11 @@ function App() {
   // const endDateSegip = (new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
 
-    // setSteppersData(testData)
-    // setIsLoaded(false)
+    setSteppersData(testData)
+    console.log(testData)
+    setIsLoaded(false)
 
   }, []);
 
@@ -231,9 +240,47 @@ function App() {
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>) : (
 
-        <div className='grid grid-rows-3 mx-4 gap-4'>
+        <div className='w-full m-5 gap-5 '>
 
-          <div className='flex items-end gap-2'>
+          {/* Calendar */}
+          <div className=''>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[280px] justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            <Button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+              onClick={() => {
+                if (!date) return
+                setStartDate(new Date(date.setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                setEndDate(new Date(date.setHours(23, 59, 59, 999) - 4 * 60 * 60 * 1000).toISOString().replace('Z', '-04:00'));
+                fetchData();
+              }}
+            >
+              ACTUALIZAR
+            </Button>
+          </div>
+
+
+          <div className=''>
             <Button
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
               onClick={() => {
@@ -269,7 +316,7 @@ function App() {
             </Button>
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='mt-4'>
 
 
             <Card className=''>
@@ -290,35 +337,9 @@ function App() {
 
               </CardContent>
             </Card>
-           {/* <Card className=''>
-              <CardHeader>
-                <CardTitle>
-                  Cantidad de cuentas aperturadas bajo contingencia SEGIP
-                </CardTitle>
-                <CardDescription>
-                  
-                  <p className="text-sm">Desde: 21/02/2025</p>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-
-                <div className="text-8xl font-semibold ">
-                  {isLoadedSegip ? (
-                    <svg className="animate-spin h-8 w-8 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-
-                  ) : getSegipContingenciaAccounts(allSteppersData)}
 
 
-
-                </div>
-
-              </CardContent>
-            </Card> */}
-
-            <div className=''>
+            <div className='mt-4'>
               <ChartOpeningByHours dataEntry={steppersData} />
             </div>
 

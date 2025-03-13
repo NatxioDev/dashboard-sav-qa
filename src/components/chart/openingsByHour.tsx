@@ -20,6 +20,8 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
 
     function agruparPorIntervalo30Minutos(data: any): { interval: string, count: number }[] {
 
+        const INTERVAL = 60
+
         if (data.length == 0) {
             return [];
             console.log("first", data);
@@ -36,7 +38,7 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
 
                 // Redondear la hora al intervalo de 30 minutos
                 const minutos = date.getMinutes();
-                const minutosRedondeados = minutos < 30 ? 0 : 30;
+                const minutosRedondeados = minutos < INTERVAL ? 0 : INTERVAL;
                 date.setMinutes(minutosRedondeados);
 
                 const clave = date.toISOString()
