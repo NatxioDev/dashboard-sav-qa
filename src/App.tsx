@@ -36,17 +36,17 @@ function App() {
   const SECRET_ID = import.meta.env.VITE_SECRET_ID
 
   const [isLoaded, setIsLoaded] = useState(true);
-  const [isLoadedSegip, setIsLoadedSegip] = useState(false);
+  // const [isLoadedSegip, setIsLoadedSegip] = useState(false);
 
   const [steppersData, setSteppersData] = useState<any[]>([])
 
-  const [allSteppersData, setAllSteppersData] = useState<any[]>([])
+  // const [allSteppersData, setAllSteppersData] = useState<any[]>([])
 
   const [startDate, setStartDate] = useState(new Date(new Date().setHours(0, 0, 0, 0) - 4 * 60 * 60 * 1000).toISOString().replace('Z', ''))
   const [endDate, setEndDate] = useState(new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
-  const startDateSegip = (new Date('2025-02-21T00:00:00-04:00').toISOString().replace('Z', '-04:00'))
-  const endDateSegip = (new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
+  // const startDateSegip = (new Date('2025-02-21T00:00:00-04:00').toISOString().replace('Z', '-04:00'))
+  // const endDateSegip = (new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
   useEffect(() => {
     fetchData();
@@ -107,53 +107,53 @@ function App() {
 
 
 
-  const fetchDataForSEGIP = async () => {
-    try {
-      setIsLoadedSegip(true)
-      const authResponse = await fetch('https://apis.dev.bancosol.net.bo/api/authorization/v1/access-tokens', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + btoa(`${CLIENT_ID}:${SECRET_ID}`),
-          'Cookie': 'cookiesession1=678A3EB53EC9BB86BF1416A41A204612'
-        },
-        body: new URLSearchParams({
-          'grant_type': 'client_credentials'
-        })
-      });
+  // const fetchDataForSEGIP = async () => {
+  //   try {
+  //     setIsLoadedSegip(true)
+  //     const authResponse = await fetch('https://apis.dev.bancosol.net.bo/api/authorization/v1/access-tokens', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded',
+  //         'Authorization': 'Basic ' + btoa(`${CLIENT_ID}:${SECRET_ID}`),
+  //         'Cookie': 'cookiesession1=678A3EB53EC9BB86BF1416A41A204612'
+  //       },
+  //       body: new URLSearchParams({
+  //         'grant_type': 'client_credentials'
+  //       })
+  //     });
 
-      const authData = await authResponse.json();
-      const accessToken = authData.access_token;
+  //     const authData = await authResponse.json();
+  //     const accessToken = authData.access_token;
 
-      const reportResponse = await fetch('https://apis.prod.bancosol.net.bo/api/onboarding-ux/v1/Bsol/BusinessApiCdAhorrosBffApi/v1/ahorros/bff/get_report_query', {
-        method: 'POST',
-        headers: {
-          'client_id': CLIENT_ID,
-          'access_token': accessToken,
-          'x-bol-device': '{"device":{"os":"Android","userAgent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36","deviceModel":"Unknown Model","language":"es-419","screenWidth":372,"screenHeight":866,"hardwareConcurrency":12},"sign":"497619cd5e36484f972e58e0a7202c18825b9d1b17df1da64b5217fbb4e48b42","stepperId":"985997f2-fe1c-4820-b713-aa9043517aa7"}',
-          'Content-Type': 'application/json',
-          'Cookie': 'cookiesession1=678A3EB9A1641B5040C8253912F937F0'
-        },
-        body: JSON.stringify({
-          "startDate": startDateSegip,
-          "endDate": endDateSegip
-        })
-      });
+  //     const reportResponse = await fetch('https://apis.prod.bancosol.net.bo/api/onboarding-ux/v1/Bsol/BusinessApiCdAhorrosBffApi/v1/ahorros/bff/get_report_query', {
+  //       method: 'POST',
+  //       headers: {
+  //         'client_id': CLIENT_ID,
+  //         'access_token': accessToken,
+  //         'x-bol-device': '{"device":{"os":"Android","userAgent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36","deviceModel":"Unknown Model","language":"es-419","screenWidth":372,"screenHeight":866,"hardwareConcurrency":12},"sign":"497619cd5e36484f972e58e0a7202c18825b9d1b17df1da64b5217fbb4e48b42","stepperId":"985997f2-fe1c-4820-b713-aa9043517aa7"}',
+  //         'Content-Type': 'application/json',
+  //         'Cookie': 'cookiesession1=678A3EB9A1641B5040C8253912F937F0'
+  //       },
+  //       body: JSON.stringify({
+  //         "startDate": startDateSegip,
+  //         "endDate": endDateSegip
+  //       })
+  //     });
 
-      const reportData = await reportResponse.json();
+  //     const reportData = await reportResponse.json();
 
-      setAllSteppersData(reportData);
+  //     setAllSteppersData(reportData);
 
-      console.log(reportData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setIsLoadedSegip(false)
-    }
+  //     console.log(reportData);
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   } finally {
+  //     setIsLoadedSegip(false)
+  //   }
 
 
 
-  };
+  // };
 
   const getAccountsOpened = () => {
 
@@ -161,11 +161,11 @@ function App() {
     return steppersData.length;
   }
 
-  const getSegipContingenciaAccounts = (data: any) => {
-    const list = data.filter((stepper: any) => stepper.directoryId == 'No Segip' || stepper.directoryId == null);
-    console.log(list)
-    return list.length
-  }
+  // const getSegipContingenciaAccounts = (data: any) => {
+  //   const list = data.filter((stepper: any) => stepper.directoryId == 'No Segip' || stepper.directoryId == null);
+  //   console.log(list)
+  //   return list.length
+  // }
 
 
 
