@@ -50,7 +50,6 @@ function App() {
 
   useEffect(() => {
     fetchData();
-    fetchDataForSEGIP();
 
     // setSteppersData(testData)
     // setIsLoaded(false)
@@ -291,7 +290,7 @@ function App() {
 
               </CardContent>
             </Card>
-            <Card className=''>
+           {/* <Card className=''>
               <CardHeader>
                 <CardTitle>
                   Cantidad de cuentas aperturadas bajo contingencia SEGIP
@@ -317,7 +316,7 @@ function App() {
                 </div>
 
               </CardContent>
-            </Card>
+            </Card> */}
 
             <div className=''>
               <ChartOpeningByHours dataEntry={steppersData} />
