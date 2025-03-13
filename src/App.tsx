@@ -57,11 +57,11 @@ function App() {
   // const endDateSegip = (new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().replace('Z', ''))
 
   useEffect(() => {
-    // fetchData();
+    fetchData();
 
-    setSteppersData(testData)
-    console.log(testData)
-    setIsLoaded(false)
+    // setSteppersData(testData)
+    // console.log(testData)
+    // setIsLoaded(false)
 
   }, []);
 
@@ -240,7 +240,7 @@ function App() {
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>) : (
 
-        <div className='w-full m-5 gap-5 '>
+        <div className='w-8/12 max-w-6/12 m-5 gap-5 '>
 
           {/* Calendar */}
           <div className=''>
@@ -254,7 +254,7 @@ function App() {
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {date ? format(date, "PPP") : <span>Selecciona una fecha</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
