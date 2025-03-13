@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { testData } from './components/chart/test.ts'
+// import { testData } from './components/chart/test.ts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from './components/ui/button';
 import ChartOpeningByHours from './components/chart/openingsByHour';
