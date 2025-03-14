@@ -20,16 +20,14 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
 
     function agruparPorIntervalo30Minutos(data: any): { interval: string, count: number }[] {
 
-        const INTERVAL = 60
+        const INTERVAL = 30
 
         if (data.length == 0) {
             return [];
-            console.log("first", data);
         } else {
 
 
 
-            console.log("second", data);
             const conteoPorIntervalo: Record<string, number> = {};
 
             data.forEach((item: any) => {
@@ -73,18 +71,14 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
 
     useEffect(() => {
 
-        console.log('DataEntryu', typeof dataEntry);
-        console.log('Data', dataEntry);
         if (dataEntry.length === 0) {
-            console.log('Not')
             return;
         } else {
-            console.log('Yes')
             const test = agruparPorIntervalo30Minutos(dataEntry);
             const order = orderData(test);
             const formattedData = formatData(order);
             setChartData(formattedData);
-            console.log(formattedData);
+            console.log('Formatted Data', formattedData);
         }
     }, [dataEntry]);
 
@@ -103,7 +97,7 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
+                <ChartContainer config={chartConfig} style={{ height: '260px', width: '100%' }}>
                     <LineChart
                         accessibilityLayer
                         data={chartData}
@@ -117,16 +111,13 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
                             dataKey="interval"
                             tickLine={false}
                             axisLine={false}
-                            tickMargin={0}
-                            tickSize={0}
+                            tickMargin={10}
+                            tickSize={5}
                             accentHeight={0}
-                        // tickFormatter={(value) => value.slice(0, 3)}
                         />
                         <ChartTooltip
                             cursor={true}
                             content={<ChartTooltipContent labelKey="desktop" nameKey="interval" />}
-
-
                         />
                         <Line
                             dataKey="count"
