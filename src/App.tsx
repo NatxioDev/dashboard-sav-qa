@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from './components/ui/button';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import ChartOpeningByHours from './components/chart/openingsByHour';
-import { testData } from './components/chart/test.ts';
+import ChartOpeningsByType from './components/chart/openingsByType';
+// import { testData } from './components/chart/test.ts';
 
 
 function App() {
@@ -63,6 +63,7 @@ function App() {
       });
 
       const reportData = await reportResponse.json();
+      console.log(reportData)
       setSteppersData(reportData);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -72,12 +73,12 @@ function App() {
   };
 
   useEffect(() => {
-    // const initialStartDate = formatDate(new Date());
-    // const initialEndDate = formatDate(new Date(), true);
-    // fetchData(initialStartDate, initialEndDate);
+    const initialStartDate = formatDate(new Date());
+    const initialEndDate = formatDate(new Date(), true);
+    fetchData(initialStartDate, initialEndDate);
 
-    console.log(testData)
-    setSteppersData(testData);
+    // console.log(testData)
+    // setSteppersData(testData);
 
   }, []);
 
@@ -85,8 +86,8 @@ function App() {
   const getLinkReferenceCount = () => steppersData.filter((step) => step.linkerreference != null);
 
   return (
-    <div className="p-6 bg-neutral-900  min-h-screen">
-      <div className="m-5 ">
+    <div className="p-2 bg-neutral-900  min-h-screen">
+      <div className="mx-2 my-5 ">
 
         <div>
           <div className="flex items-center space-x-4">
@@ -98,14 +99,14 @@ function App() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="">
-                <Calendar mode="single" selected={date} onSelect={setDate} />
+                <Calendar mode="single" selected={date} onSelect={(day) => day && setDate(day)} />
               </PopoverContent>
             </Popover>
             <Button
-              className="bg-blue-600 hover:bg-blue-500"
+              className="bg-purple-600 hover:bg-purple-500"
               onClick={() => fetchData(formatDate(date || new Date(), false), formatDate(date || new Date(), true))}
             >
-              Buscar
+              Actualizar
             </Button>
           </div>
           <div className="mt-4 text-white">
@@ -114,58 +115,26 @@ function App() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-            ) : (
+            ) : (getAccountsOpened().length == 0 ? <div>No hay datos</div> :
               <div>
-
-                <div className='flex flex-col md:flex-row gap-2'>
-                  <Card className='mt-4'>
-                    <CardHeader>
-                      <CardTitle>
-                        Total de cuentas aperturadas
-                      </CardTitle>
-
-                    </CardHeader>
-                    <CardContent>
-
-                      <div className="text-8xl font-semibold ">
-                        {getAccountsOpened().length}
-                      </div>
-
-                    </CardContent>
-                  </Card>
-                  <Card className='mt-4'>
-                    <CardHeader>
-                      <CardTitle>
-                        Total de cuentas aperturadas - Asesor
-                      </CardTitle>
-
-                    </CardHeader>
-                    <CardContent>
-
-                      <div className="text-8xl font-semibold ">
-                        {getLinkReferenceCount().length}
-                      </div>
-
-                    </CardContent>
-                  </Card>
-                  <Card className='mt-4'>
-                    <CardHeader>
-                      <CardTitle>
-                        Total de cuentas aperturadas - Autogestionado
-                      </CardTitle>
-
-                    </CardHeader>
-                    <CardContent>
-
-                      <div className="text-8xl font-semibold ">
-                        {getAccountsOpened().length - getLinkReferenceCount().length}
-                      </div>
-
-                    </CardContent>
-                  </Card>
-
+                <div className='my-2 font-semibold'>
+                    Actualizado a: {new Date(getAccountsOpened()[0].dateregister).toLocaleDateString()}
                 </div>
-                <div className='mt-4'>
+                <div className='grid grid-cols-1 md:grid-cols-1 gap-2'>
+                  <ChartOpeningsByType dataEntry={
+                    [
+                      {
+                        name: 'Autogestionado',
+                        value: getAccountsOpened().length - getLinkReferenceCount().length,
+                        fill: '#7200fd'
+                      },
+                      {
+                        name: 'Asesor',
+                        value: getLinkReferenceCount().length,
+                        fill: '#fda300'
+                      }
+                    ]} />
+
                   <ChartOpeningByHours dataEntry={getAccountsOpened()} />
                 </div>
               </div>

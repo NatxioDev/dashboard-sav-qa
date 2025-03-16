@@ -1,4 +1,4 @@
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Legend, Line, LineChart, XAxis } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 import { useEffect, useState } from "react";
@@ -12,61 +12,71 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
 
     const chartConfig = {
         desktop: {
-            label: "Desktop",
+            label: "Apertura",
             color: "#7300ff",
         },
     } satisfies ChartConfig
 
 
-    function agruparPorIntervalo30Minutos(data: any): { interval: string, count: number }[] {
+    function agruparPorIntervalo(data: any[], intervalMinutes: number = 30): { interval: string, ag: number, as: number }[] {
+        if (data.length === 0) return [];
 
-        const INTERVAL = 30
+        const conteoPorIntervalo: Record<string, { ag: number, as: number }> = {};
 
-        if (data.length == 0) {
-            return [];
-        } else {
+        data.forEach((item: any) => {
+            const date = new Date(item.dateregister);
+            date.setSeconds(0, 0); // Resetea segundos y milisegundos
 
+            // Redondear la hora al intervalo parametrizable
+            const minutos = date.getMinutes();
+            const minutosRedondeados = Math.floor(minutos / intervalMinutes) * intervalMinutes;
+            date.setMinutes(minutosRedondeados);
 
+            // Formatear la hora en formato HH:mm
+            const clave = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-            const conteoPorIntervalo: Record<string, number> = {};
+            // Inicializar conteo si no existe
+            if (!conteoPorIntervalo[clave]) {
+                conteoPorIntervalo[clave] = { ag: 0, as: 0 };
+            }
 
-            data.forEach((item: any) => {
-                const date = new Date(item.dateregister);
-                date.setSeconds(0, 0); // Resetea segundos y milisegundos
-
-                // Redondear la hora al intervalo de 30 minutos
-                const minutos = date.getMinutes();
-                const minutosRedondeados = minutos < INTERVAL ? 0 : INTERVAL;
-                date.setMinutes(minutosRedondeados);
-
-                const clave = date.toISOString()
-
-                conteoPorIntervalo[clave] = (conteoPorIntervalo[clave] || 0) + 1;
-            });
-
-
-
-            return Object.entries(conteoPorIntervalo).map(([interval, count]) => ({ interval, count }));
-        }
-    }
-
-    const orderData = (data: any) => {
-        const orderedData = data.sort((a: any, b: any) => {
-            return new Date(a.interval).getTime() - new Date(b.interval).getTime();
+            // Incrementar contadores basados en el valor de 'linkerreference'
+            if (item.linkerreference === null) {
+                conteoPorIntervalo[clave].ag++;
+            } else {
+                conteoPorIntervalo[clave].as++;
+            }
         });
-        return orderedData;
+
+        // Convertir el objeto en un array y ordenar de mayor a menor por la hora
+        return Object.entries(conteoPorIntervalo)
+            .map(([interval, { ag, as }]) => ({
+                interval,
+                ag,
+                as
+            }))
+            .sort((a, b) => a.interval.localeCompare(b.interval));
     }
 
-    const formatData = (data: any) => {
-        const formattedData = data.map((item: any) => {
-            const date = new Date(item.interval);
-            const hour = date.getHours();
-            const minutes = date.getMinutes();
-            const formattedHour = `${hour}:${minutes === 0 ? '00' : minutes}`;
-            return { ...item, interval: formattedHour };
-        });
-        return formattedData;
-    }
+
+
+    // const orderData = (data: any) => {
+    //     const orderedData = data.sort((a: any, b: any) => {
+    //         return new Date(a.interval).getTime() - new Date(b.interval).getTime();
+    //     });
+    //     return orderedData;
+    // }
+
+    // const formatData = (data: any) => {
+    //     const formattedData = data.map((item: any) => {
+    //         const date = new Date(item.interval);
+    //         const hour = date.getHours();
+    //         const minutes = date.getMinutes();
+    //         const formattedHour = `${hour}:${minutes === 0 ? '00' : minutes}`;
+    //         return { ...item, interval: formattedHour };
+    //     });
+    //     return formattedData;
+    // }
 
 
     useEffect(() => {
@@ -74,11 +84,13 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
         if (dataEntry.length === 0) {
             return;
         } else {
-            const test = agruparPorIntervalo30Minutos(dataEntry);
-            const order = orderData(test);
-            const formattedData = formatData(order);
-            setChartData(formattedData);
-            console.log('Formatted Data', formattedData);
+            const test = agruparPorIntervalo(dataEntry);
+            // const order = orderData(test);
+
+            // console.log('Hey', order)
+
+            // const formattedData = formatData(order);
+            setChartData(test);
         }
     }, [dataEntry]);
 
@@ -114,16 +126,27 @@ export default function ChartOpeningByHours({ dataEntry }: { dataEntry: any[] })
                             tickMargin={10}
                             tickSize={5}
                             accentHeight={0}
+                            
                         />
                         <ChartTooltip
                             cursor={true}
                             content={<ChartTooltipContent labelKey="desktop" nameKey="interval" />}
                         />
+                        <Legend />
                         <Line
-                            dataKey="count"
+                            dataKey="ag"
                             type="linear"
-                            stroke="var(--color-desktop)"
+                            stroke="#7200fd"
                             strokeWidth={3}
+                            dot={true}
+                            name="Autogestionado"
+                        />
+                        <Line
+                            dataKey="as"
+                            type="linear"
+                            stroke="#fda300"
+                            strokeWidth={3}
+                            name="Asesor"
                             dot={true}
                         />
                     </LineChart>
