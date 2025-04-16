@@ -27,7 +27,7 @@ function App() {
   const fetchData = async (startDate: string, endDate: string) => {
     try {
       setIsLoaded(true);
-      const authResponse = await fetch('https://apis.dev.bancosol.net.bo/api/authorization/v1/access-tokens', {
+      const authResponse = await fetch('https://apis.prod.bancosol.net.bo/api/authorization/v1/access-tokens', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -84,6 +84,7 @@ function App() {
 
   const getAccountsOpened = () => steppersData;
   const getLinkReferenceCount = () => steppersData.filter((step) => step.linkerreference != null);
+  const getWithoutDocumentContractIdCount = () => steppersData.filter((step) => step.documentContractId == null);
 
   return (
     <div className="p-2 bg-neutral-900  min-h-screen">
@@ -118,7 +119,7 @@ function App() {
             ) : (getAccountsOpened().length == 0 ? <div>No hay datos</div> :
               <div>
                 <div className='my-2 font-semibold'>
-                    Actualizado a: {new Date(getAccountsOpened()[0].dateregister).toLocaleDateString()}
+                  Actualizado a: {new Date(getAccountsOpened()[0].dateregister).toLocaleDateString()}
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-1 gap-2'>
                   <ChartOpeningsByType dataEntry={
@@ -143,7 +144,12 @@ function App() {
           </div>
         </div>
       </div>
+      <div>
+        <span className='text-white'>SIN DOCUMENTID {getWithoutDocumentContractIdCount().length}</span>
+      </div>
     </div>
+
+
   );
 }
 
